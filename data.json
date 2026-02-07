@@ -1,0 +1,170 @@
+{
+  "McDonald's": {
+    "Big Mac": {
+      "supplier": "Lopez Foods / Keystone Foods",
+      "confidence": "high"
+    },
+    "Chicken McNuggets": {
+      "supplier": "Tyson Foods",
+      "confidence": "high"
+    },
+    "Quarter Pounder": {
+      "supplier": "Cargill",
+      "confidence": "medium"
+    },
+    "Filet-O-Fish": {
+      "supplier": "High Liner Foods / Gorton's",
+      "confidence": "medium"
+    },
+    "McChicken": {
+      "supplier": "Tyson Foods",
+      "confidence": "high"
+    }
+  },
+  "KFC": {
+    "Original Recipe Chicken": {
+      "supplier": "Tyson Foods / Pilgrim's Pride",
+      "confidence": "high"
+    },
+    "Extra Crispy Chicken": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    },
+    "Popcorn Chicken": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    },
+    "Chicken Tenders": {
+      "supplier": "Pilgrim's Pride",
+      "confidence": "medium"
+    }
+  },
+  "Chick-fil-A": {
+    "Chick-fil-A Chicken Sandwich": {
+      "supplier": "Multiple (no single dominant)",
+      "confidence": "medium"
+    },
+    "Chicken Nuggets": {
+      "supplier": "Koch Foods / Wayne Farms",
+      "confidence": "medium"
+    },
+    "Grilled Chicken": {
+      "supplier": "Koch Foods",
+      "confidence": "low"
+    }
+  },
+  "Wendy's": {
+    "Dave's Single": {
+      "supplier": "Cargill / JBS",
+      "confidence": "medium"
+    },
+    "Baconator": {
+      "supplier": "Cargill / JBS",
+      "confidence": "medium"
+    },
+    "Spicy Chicken Sandwich": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    },
+    "Chicken Nuggets": {
+      "supplier": "Tyson Foods",
+      "confidence": "high"
+    }
+  },
+  "Taco Bell": {
+    "Crunchy Taco Beef": {
+      "supplier": "Cargill",
+      "confidence": "medium"
+    },
+    "Beef Burrito": {
+      "supplier": "Cargill",
+      "confidence": "medium"
+    },
+    "Chicken Quesadilla": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    },
+    "Steak": {
+      "supplier": "Cargill / Marfrig",
+      "confidence": "low"
+    }
+  },
+  "Burger King": {
+    "Whopper": {
+      "supplier": "Cargill / Tyson Foods",
+      "confidence": "medium"
+    },
+    "Chicken Fries": {
+      "supplier": "Tyson Foods",
+      "confidence": "high"
+    },
+    "Original Chicken Sandwich": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    }
+  },
+  "Subway": {
+    "Turkey Breast": {
+      "supplier": "Butterball / Jennie-O",
+      "confidence": "medium"
+    },
+    "Roast Beef": {
+      "supplier": "Cargill",
+      "confidence": "low"
+    },
+    "Chicken Teriyaki": {
+      "supplier": "Perdue Farms",
+      "confidence": "low"
+    },
+    "Tuna": {
+      "supplier": "Thai Union Group",
+      "confidence": "medium"
+    }
+  },
+  "Chipotle": {
+    "Chicken": {
+      "supplier": "Bell & Evans / Perdue Farms",
+      "confidence": "high"
+    },
+    "Steak": {
+      "supplier": "Meyer Natural Angus / Cargill",
+      "confidence": "medium"
+    },
+    "Carnitas": {
+      "supplier": "Niman Ranch / Karro Food",
+      "confidence": "medium"
+    },
+    "Barbacoa": {
+      "supplier": "Australian cattle suppliers",
+      "confidence": "low"
+    }
+  },
+  "Popeyes": {
+    "Chicken Sandwich": {
+      "supplier": "Columbia Meat / Wayne Farms",
+      "confidence": "high"
+    },
+    "Fried Chicken": {
+      "supplier": "Wayne Farms / Pilgrim's Pride",
+      "confidence": "high"
+    },
+    "Chicken Tenders": {
+      "supplier": "Wayne Farms",
+      "confidence": "medium"
+    }
+  },
+  "Arby's": {
+    "Roast Beef": {
+      "supplier": "JBS / Cargill",
+      "confidence": "medium"
+    },
+    "Turkey": {
+      "supplier": "Butterball",
+      "confidence": "medium"
+    },
+    "Chicken Tenders": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    }
+  }
+}
