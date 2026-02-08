@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quick lookup of likely meat/poultry/seafood suppliers for major restaurant chains">
+    <title>SourceCheck - Restaurant Supplier Lookup</title>
+    <style>
+/* ===== CSS Variables for Light/Dark Mode ===== */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-card: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --accent-primary: #0066cc;
+    --accent-hover: #0052a3;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --success-bg: #d4edda;
+    --warning-bg: #fff3cd;
+    --danger-bg: #f8d7da;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #2d2d2d;
+        --bg-card: #242424;
+        --text-primary: #e9ecef;
+        --text-secondary: #adb5bd;
+        --border-color: #495057;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
+        --success-bg: #1e4620;
+        --warning-bg: #4d3800;
+        --danger-bg: #4d1f1f;
+    }
+}
+
+/* ===== Reset & Base Styles ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== Container ===== */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    width: 100%;
+}
+
+/* ===== Header ===== */
+header {
+    text-align: center;
+    padding: 40px 20px 30px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.tagline {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ===== Input Section ===== */
+.input-section {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow);
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.input-group input[type="text"] {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: border-color 0.3s ease;
+}
+
+.input-group input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.hint {
+    margin-top: 8px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* ===== Buttons ===== */
+.button-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 14px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 140px;
+}
+
+.primary-btn {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.primary-btn:hover {
+    background: var(--accent-hover);
+    box-shadow: var(--shadow-hover);
+}
+
+.secondary-btn {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+}
+
+.secondary-btn:hover {
+    background: var(--border-color);
+}
+
+.remove-btn {
+    background: var(--danger);
+    color: white;
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    margin-top: 10px;
+    min-width: auto;
+}
+
+.remove-btn:hover {
+    background: #c82333;
+}
+
+/* ===== Photo Preview ===== */
+.photo-preview {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 2px dashed var(--border-color);
+}
+
+.preview-label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.photo-preview img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    display: block;
+    box-shadow: var(--shadow);
+}
+
+/* ===== Results Section ===== */
+.results-section {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow);
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-found {
+    text-align: left;
+}
+
+.result-found h2 {
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 1.5rem;
+}
+
+.result-found h3 {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+.supplier-info {
+    background: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.supplier-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+}
+
+.supplier-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+/* ===== Confidence Badge ===== */
+.confidence-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-top: 15px;
+}
+
+.confidence-badge.high {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.confidence-badge.medium {
+    background: var(--warning-bg);
+    color: #856404;
+}
+
+.confidence-badge.low {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+.confidence-bar {
+    width: 60px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.confidence-fill.high {
+    width: 90%;
+    background: var(--success);
+}
+
+.confidence-fill.medium {
+    width: 60%;
+    background: var(--warning);
+}
+
+.confidence-fill.low {
+    width: 30%;
+    background: var(--danger);
+}
+
+/* ===== No Results ===== */
+.no-result {
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.no-result h3 {
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.no-result p {
+    font-size: 1rem;
+}
+
+/* ===== Footer ===== */
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: auto;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+footer a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    header {
+        padding: 30px 15px 20px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .tagline {
+        font-size: 0.9rem;
+    }
+
+    .input-section, .results-section {
+        padding: 20px;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .result-found h2 {
+        font-size: 1.25rem;
+    }
+
+    .result-found h3 {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.75rem;
+    }
+
+    .input-section, .results-section {
+        padding: 15px;
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🔍 SourceCheck</h1>
+            <p class="tagline">Quick lookup of likely meat/poultry/seafood suppliers for major chains</p>
+        </header>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <div class="input-group">
+                <label for="query">Enter restaurant chain and menu item:</label>
+                <input 
+                    type="text" 
+                    id="query" 
+                    placeholder="e.g., McDonald's Big Mac or KFC Original Recipe Chicken"
+                    autocomplete="off"
+                >
+                <p class="hint">Example: McDonald's Big Mac or KFC Original Recipe Chicken</p>
+            </div>
+
+            <div class="button-group">
+                <button id="lookupBtn" class="primary-btn">Look Up</button>
+                <button id="cameraBtn" class="secondary-btn">📷 Take Photo of Menu</button>
+            </div>
+
+            <!-- Hidden file input for camera -->
+            <input 
+                type="file" 
+                id="cameraInput" 
+                accept="image/*" 
+                capture="environment" 
+                style="display: none;"
+            >
+
+            <!-- Photo preview -->
+            <div id="photoPreview" class="photo-preview" style="display: none;">
+                <p class="preview-label">Menu photo:</p>
+                <img id="previewImage" src="" alt="Menu preview">
+                <button id="removePhoto" class="remove-btn">✕ Remove</button>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results" class="results-section" style="display: none;">
+            <div id="resultContent"></div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>Data is approximate and sourced from public reports. Not official.</p>
+            <p>Last updated: February 2026 | <a href="https://github.com/yourusername/sourcecheck" target="_blank">GitHub</a></p>
+        </footer>
+    </div>
+
+    <script>
+// ===== Embedded Data =====
+const SUPPLIER_DATA = {
+  "McDonald's": {
+    "Big Mac": {
+      "supplier": "Lopez Foods / Keystone Foods",
+      "confidence": "high"
+    },
+    "Chicken McNuggets": {
+      "supplier": "Tyson Foods",
+      "confidence": "high"
+    },
+    "Quarter Pounder": {
+      "supplier": "Cargill",
+      "confidence": "medium"
+    },
+    "Filet-O-Fish": {
+      "supplier": "High Liner Foods / Gorton's",
+      "confidence": "medium"
+    },
+    "McChicken": {
+      "supplier": "Tyson Foods",
+      "confidence": "high"
+    }
+  },
+  "KFC": {
+    "Original Recipe Chicken": {
+      "supplier": "Tyson Foods / Pilgrim's Pride",
+      "confidence": "high"
+    },
+    "Extra Crispy Chicken": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    },
+    "Popcorn Chicken": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    },
+    "Chicken Tenders": {
+      "supplier": "Pilgrim's Pride",
+      "confidence": "medium"
+    }
+  },
+  "Chick-fil-A": {
+    "Chick-fil-A Chicken Sandwich": {
+      "supplier": "Multiple (no single dominant)",
+      "confidence": "medium"
+    },
+    "Chicken Nuggets": {
+      "supplier": "Koch Foods / Wayne Farms",
+      "confidence": "medium"
+    },
+    "Grilled Chicken": {
+      "supplier": "Koch Foods",
+      "confidence": "low"
+    }
+  },
+  "Wendy's": {
+    "Dave's Single": {
+      "supplier": "Cargill / JBS",
+      "confidence": "medium"
+    },
+    "Baconator": {
+      "supplier": "Cargill / JBS",
+      "confidence": "medium"
+    },
+    "Spicy Chicken Sandwich": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    },
+    "Chicken Nuggets": {
+      "supplier": "Tyson Foods",
+      "confidence": "high"
+    }
+  },
+  "Taco Bell": {
+    "Crunchy Taco Beef": {
+      "supplier": "Cargill",
+      "confidence": "medium"
+    },
+    "Beef Burrito": {
+      "supplier": "Cargill",
+      "confidence": "medium"
+    },
+    "Chicken Quesadilla": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    },
+    "Steak": {
+      "supplier": "Cargill / Marfrig",
+      "confidence": "low"
+    }
+  },
+  "Burger King": {
+    "Whopper": {
+      "supplier": "Cargill / Tyson Foods",
+      "confidence": "medium"
+    },
+    "Chicken Fries": {
+      "supplier": "Tyson Foods",
+      "confidence": "high"
+    },
+    "Original Chicken Sandwich": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    }
+  },
+  "Subway": {
+    "Turkey Breast": {
+      "supplier": "Butterball / Jennie-O",
+      "confidence": "medium"
+    },
+    "Roast Beef": {
+      "supplier": "Cargill",
+      "confidence": "low"
+    },
+    "Chicken Teriyaki": {
+      "supplier": "Perdue Farms",
+      "confidence": "low"
+    },
+    "Tuna": {
+      "supplier": "Thai Union Group",
+      "confidence": "medium"
+    }
+  },
+  "Chipotle": {
+    "Chicken": {
+      "supplier": "Bell & Evans / Perdue Farms",
+      "confidence": "high"
+    },
+    "Steak": {
+      "supplier": "Meyer Natural Angus / Cargill",
+      "confidence": "medium"
+    },
+    "Carnitas": {
+      "supplier": "Niman Ranch / Karro Food",
+      "confidence": "medium"
+    },
+    "Barbacoa": {
+      "supplier": "Australian cattle suppliers",
+      "confidence": "low"
+    }
+  },
+  "Popeyes": {
+    "Chicken Sandwich": {
+      "supplier": "Columbia Meat / Wayne Farms",
+      "confidence": "high"
+    },
+    "Fried Chicken": {
+      "supplier": "Wayne Farms / Pilgrim's Pride",
+      "confidence": "high"
+    },
+    "Chicken Tenders": {
+      "supplier": "Wayne Farms",
+      "confidence": "medium"
+    }
+  },
+  "Arby's": {
+    "Roast Beef": {
+      "supplier": "JBS / Cargill",
+      "confidence": "medium"
+    },
+    "Turkey": {
+      "supplier": "Butterball",
+      "confidence": "medium"
+    },
+    "Chicken Tenders": {
+      "supplier": "Tyson Foods",
+      "confidence": "medium"
+    }
+  }
+};
+
+// ===== State Management =====
+let currentPhoto = null;
+
+// ===== Initialize on Page Load =====
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('SourceCheck loaded successfully!');
+    setupEventListeners();
+});
+
+// ===== Event Listeners =====
+function setupEventListeners() {
+    const lookupBtn = document.getElementById('lookupBtn');
+    const cameraBtn = document.getElementById('cameraBtn');
+    const cameraInput = document.getElementById('cameraInput');
+    const removePhotoBtn = document.getElementById('removePhoto');
+    const queryInput = document.getElementById('query');
+
+    lookupBtn.addEventListener('click', handleLookup);
+    cameraBtn.addEventListener('click', () => cameraInput.click());
+    cameraInput.addEventListener('change', handlePhotoCapture);
+    removePhotoBtn.addEventListener('click', removePhoto);
+    
+    // Allow Enter key to trigger lookup
+    queryInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleLookup();
+        }
+    });
+}
+
+// ===== Photo Handling =====
+function handlePhotoCapture(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        currentPhoto = e.target.result;
+        displayPhotoPreview(currentPhoto);
+    };
+    reader.readAsDataURL(file);
+}
+
+function displayPhotoPreview(imageData) {
+    const preview = document.getElementById('photoPreview');
+    const previewImage = document.getElementById('previewImage');
+    
+    previewImage.src = imageData;
+    preview.style.display = 'block';
+}
+
+function removePhoto() {
+    currentPhoto = null;
+    document.getElementById('photoPreview').style.display = 'none';
+    document.getElementById('previewImage').src = '';
+    document.getElementById('cameraInput').value = '';
+}
+
+// ===== Lookup Logic =====
+function handleLookup() {
+    const query = document.getElementById('query').value.trim();
+    
+    if (!query) {
+        showError('Please enter a restaurant chain and menu item.');
+        return;
+    }
+
+    const result = searchSupplier(query);
+    displayResult(result, query);
+}
+
+function searchSupplier(query) {
+    const normalizedQuery = query.toLowerCase();
+    
+    // Try to extract chain and item from query
+    let bestMatch = null;
+    let bestScore = 0;
+
+    for (const [chain, items] of Object.entries(SUPPLIER_DATA)) {
+        const chainScore = fuzzyMatch(normalizedQuery, chain.toLowerCase());
+        
+        if (chainScore > 0.3) {
+            // Chain potentially matches, now check items
+            for (const [itemName, itemData] of Object.entries(items)) {
+                const itemScore = fuzzyMatch(normalizedQuery, itemName.toLowerCase());
+                const combinedScore = chainScore + itemScore;
+                
+                if (combinedScore > bestScore) {
+                    bestScore = combinedScore;
+                    bestMatch = {
+                        chain: chain,
+                        item: itemName,
+                        supplier: itemData.supplier,
+                        confidence: itemData.confidence
+                    };
+                }
+            }
+        }
+    }
+
+    // If we have a decent match, return it
+    if (bestMatch && bestScore > 0.5) {
+        return bestMatch;
+    }
+
+    // Check if at least the chain matches
+    for (const [chain, items] of Object.entries(SUPPLIER_DATA)) {
+        if (fuzzyMatch(normalizedQuery, chain.toLowerCase()) > 0.5) {
+            return {
+                chain: chain,
+                item: null,
+                supplier: null,
+                confidence: null
+            };
+        }
+    }
+
+    return null;
+}
+
+// ===== Fuzzy Matching Algorithm =====
+function fuzzyMatch(query, target) {
+    // Simple fuzzy matching based on:
+    // 1. Exact substring match
+    // 2. Word-level matches
+    // 3. Character overlap
+    
+    if (target.includes(query)) return 1.0;
+    if (query.includes(target)) return 0.9;
+    
+    const queryWords = query.split(/\s+/);
+    const targetWords = target.split(/\s+/);
+    
+    let wordMatches = 0;
+    for (const qWord of queryWords) {
+        for (const tWord of targetWords) {
+            if (tWord.includes(qWord) || qWord.includes(tWord)) {
+                wordMatches++;
+                break;
+            }
+        }
+    }
+    
+    const wordScore = wordMatches / Math.max(queryWords.length, targetWords.length);
+    
+    // Calculate character overlap
+    const queryChars = new Set(query.replace(/\s+/g, ''));
+    const targetChars = new Set(target.replace(/\s+/g, ''));
+    const intersection = new Set([...queryChars].filter(x => targetChars.has(x)));
+    const charScore = intersection.size / Math.max(queryChars.size, targetChars.size);
+    
+    return (wordScore * 0.7) + (charScore * 0.3);
+}
+
+// ===== Display Results =====
+function displayResult(result, originalQuery) {
+    const resultsSection = document.getElementById('results');
+    const resultContent = document.getElementById('resultContent');
+    
+    resultsSection.style.display = 'block';
+    
+    if (!result) {
+        // No chain or item found
+        resultContent.innerHTML = `
+            <div class="no-result">
+                <h3>No data available</h3>
+                <p>We don't have information for "<strong>${escapeHtml(originalQuery)}</strong>" yet.</p>
+                <p style="margin-top: 15px;">Help improve SourceCheck by sharing what you know!</p>
+            </div>
+        `;
+    } else if (result.item === null) {
+        // Chain found but not the specific item
+        resultContent.innerHTML = `
+            <div class="no-result">
+                <h3>Chain found: ${escapeHtml(result.chain)}</h3>
+                <p>We have data for ${escapeHtml(result.chain)}, but this specific item isn't in our database yet.</p>
+                <p style="margin-top: 15px;">Available items: ${getAvailableItems(result.chain)}</p>
+            </div>
+        `;
+    } else {
+        // Full match found
+        const confidenceText = getConfidenceText(result.confidence);
+        const confidenceClass = result.confidence;
+        
+        resultContent.innerHTML = `
+            <div class="result-found">
+                <h2>${escapeHtml(result.chain)}</h2>
+                <h3>${escapeHtml(result.item)}</h3>
+                
+                <div class="supplier-info">
+                    <p class="supplier-label">Likely Supplier:</p>
+                    <p class="supplier-name">${escapeHtml(result.supplier)}</p>
+                    
+                    <div class="confidence-badge ${confidenceClass}">
+                        <div class="confidence-bar">
+                            <div class="confidence-fill ${confidenceClass}"></div>
+                        </div>
+                        <span>${confidenceText}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Scroll to results on mobile
+    if (window.innerWidth < 768) {
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+function getConfidenceText(confidence) {
+    const texts = {
+        high: 'High confidence – based on supplier reports',
+        medium: 'Medium confidence – common industry pattern',
+        low: 'Low confidence – limited or user-reported data'
+    };
+    return texts[confidence] || 'Unknown confidence';
+}
+
+function getAvailableItems(chain) {
+    const items = Object.keys(SUPPLIER_DATA[chain]);
+    if (items.length <= 3) {
+        return items.join(', ');
+    }
+    return items.slice(0, 3).join(', ') + `, and ${items.length - 3} more`;
+}
+
+// ===== Error Handling =====
+function showError(message) {
+    const resultsSection = document.getElementById('results');
+    const resultContent = document.getElementById('resultContent');
+    
+    resultsSection.style.display = 'block';
+    resultContent.innerHTML = `
+        <div class="no-result">
+            <h3 style="color: var(--danger);">⚠️ Error</h3>
+            <p>${escapeHtml(message)}</p>
+        </div>
+    `;
+}
+
+// ===== Utility Functions =====
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+    </script>
+</body>
+</html>
