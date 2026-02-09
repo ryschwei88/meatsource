@@ -24,6 +24,7 @@
     --success-bg: #d4edda;
     --warning-bg: #fff3cd;
     --danger-bg: #f8d7da;
+    --contributor-gold: #ffd700;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -71,6 +72,7 @@ body {
 header {
     text-align: center;
     padding: 40px 20px 30px;
+    position: relative;
 }
 
 header h1 {
@@ -84,6 +86,33 @@ header h1 {
     color: var(--text-secondary);
     max-width: 600px;
     margin: 0 auto;
+}
+
+/* ===== Contributor Badge ===== */
+.contributor-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--contributor-gold), #ffed4e);
+    color: #000;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-top: 10px;
+    box-shadow: 0 2px 6px rgba(255, 215, 0, 0.3);
+    animation: fadeInBadge 0.5s ease;
+}
+
+@keyframes fadeInBadge {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* ===== Input Section ===== */
@@ -106,7 +135,9 @@ header h1 {
     color: var(--text-primary);
 }
 
-.input-group input[type="text"] {
+.input-group input[type="text"],
+.input-group textarea,
+.input-group select {
     width: 100%;
     padding: 14px 16px;
     font-size: 1rem;
@@ -115,11 +146,19 @@ header h1 {
     background: var(--bg-secondary);
     color: var(--text-primary);
     transition: border-color 0.3s ease;
+    font-family: inherit;
 }
 
-.input-group input[type="text"]:focus {
+.input-group input[type="text"]:focus,
+.input-group textarea:focus,
+.input-group select:focus {
     outline: none;
     border-color: var(--accent-primary);
+}
+
+.input-group textarea {
+    resize: vertical;
+    min-height: 80px;
 }
 
 .hint {
@@ -168,6 +207,19 @@ button {
     background: var(--border-color);
 }
 
+.add-data-btn {
+    background: var(--success);
+    color: white;
+    margin-top: 20px;
+    width: 100%;
+    font-size: 1.05rem;
+}
+
+.add-data-btn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
 .remove-btn {
     background: var(--danger);
     color: white;
@@ -179,6 +231,16 @@ button {
 
 .remove-btn:hover {
     background: #c82333;
+}
+
+.cancel-btn {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 2px solid var(--border-color);
+}
+
+.cancel-btn:hover {
+    background: var(--border-color);
 }
 
 /* ===== Photo Preview ===== */
@@ -334,6 +396,91 @@ button {
     font-size: 1rem;
 }
 
+/* ===== Submission Form ===== */
+.submission-form {
+    margin-top: 25px;
+    padding: 25px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 800px;
+        padding-top: 25px;
+        padding-bottom: 25px;
+    }
+}
+
+.submission-form h4 {
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+}
+
+.form-row {
+    margin-bottom: 16px;
+}
+
+.form-row label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    transition: border-color 0.3s ease;
+}
+
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.form-actions button {
+    flex: 1;
+}
+
+/* ===== Success Message ===== */
+.success-message {
+    background: var(--success-bg);
+    color: var(--success);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-weight: 600;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+}
+
 /* ===== Footer ===== */
 footer {
     text-align: center;
@@ -395,6 +542,14 @@ footer a:hover {
     .result-found h3 {
         font-size: 1rem;
     }
+
+    .submission-form {
+        padding: 20px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
 }
 
 @media (max-width: 480px) {
@@ -419,6 +574,7 @@ footer a:hover {
         <header>
             <h1>🔍 SourceCheck</h1>
             <p class="tagline">Quick lookup of likely meat/poultry/seafood suppliers for major chains</p>
+            <div id="contributorBadge"></div>
         </header>
 
         <!-- Input Section -->
@@ -472,183 +628,110 @@ footer a:hover {
 // ===== Embedded Data =====
 const SUPPLIER_DATA = {
   "McDonald's": {
-    "Big Mac": {
-      "supplier": "Lopez Foods / Keystone Foods",
-      "confidence": "high"
-    },
-    "Chicken McNuggets": {
-      "supplier": "Tyson Foods",
-      "confidence": "high"
-    },
-    "Quarter Pounder": {
-      "supplier": "Cargill",
-      "confidence": "medium"
-    },
-    "Filet-O-Fish": {
-      "supplier": "High Liner Foods / Gorton's",
-      "confidence": "medium"
-    },
-    "McChicken": {
-      "supplier": "Tyson Foods",
-      "confidence": "high"
-    }
+    "Big Mac": { "supplier": "Lopez Foods / Keystone Foods", "confidence": "high" },
+    "Chicken McNuggets": { "supplier": "Tyson Foods", "confidence": "high" },
+    "Quarter Pounder": { "supplier": "Cargill", "confidence": "medium" },
+    "Filet-O-Fish": { "supplier": "High Liner Foods / Gorton's", "confidence": "medium" },
+    "McChicken": { "supplier": "Tyson Foods", "confidence": "high" }
   },
   "KFC": {
-    "Original Recipe Chicken": {
-      "supplier": "Tyson Foods / Pilgrim's Pride",
-      "confidence": "high"
-    },
-    "Extra Crispy Chicken": {
-      "supplier": "Tyson Foods",
-      "confidence": "medium"
-    },
-    "Popcorn Chicken": {
-      "supplier": "Tyson Foods",
-      "confidence": "medium"
-    },
-    "Chicken Tenders": {
-      "supplier": "Pilgrim's Pride",
-      "confidence": "medium"
-    }
+    "Original Recipe Chicken": { "supplier": "Tyson Foods / Pilgrim's Pride", "confidence": "high" },
+    "Extra Crispy Chicken": { "supplier": "Tyson Foods", "confidence": "medium" },
+    "Popcorn Chicken": { "supplier": "Tyson Foods", "confidence": "medium" },
+    "Chicken Tenders": { "supplier": "Pilgrim's Pride", "confidence": "medium" }
   },
   "Chick-fil-A": {
-    "Chick-fil-A Chicken Sandwich": {
-      "supplier": "Multiple (no single dominant)",
-      "confidence": "medium"
-    },
-    "Chicken Nuggets": {
-      "supplier": "Koch Foods / Wayne Farms",
-      "confidence": "medium"
-    },
-    "Grilled Chicken": {
-      "supplier": "Koch Foods",
-      "confidence": "low"
-    }
+    "Chick-fil-A Chicken Sandwich": { "supplier": "Multiple (no single dominant)", "confidence": "medium" },
+    "Chicken Nuggets": { "supplier": "Koch Foods / Wayne Farms", "confidence": "medium" },
+    "Grilled Chicken": { "supplier": "Koch Foods", "confidence": "low" }
   },
   "Wendy's": {
-    "Dave's Single": {
-      "supplier": "Cargill / JBS",
-      "confidence": "medium"
-    },
-    "Baconator": {
-      "supplier": "Cargill / JBS",
-      "confidence": "medium"
-    },
-    "Spicy Chicken Sandwich": {
-      "supplier": "Tyson Foods",
-      "confidence": "medium"
-    },
-    "Chicken Nuggets": {
-      "supplier": "Tyson Foods",
-      "confidence": "high"
-    }
+    "Dave's Single": { "supplier": "Cargill / JBS", "confidence": "medium" },
+    "Baconator": { "supplier": "Cargill / JBS", "confidence": "medium" },
+    "Spicy Chicken Sandwich": { "supplier": "Tyson Foods", "confidence": "medium" },
+    "Chicken Nuggets": { "supplier": "Tyson Foods", "confidence": "high" }
   },
   "Taco Bell": {
-    "Crunchy Taco Beef": {
-      "supplier": "Cargill",
-      "confidence": "medium"
-    },
-    "Beef Burrito": {
-      "supplier": "Cargill",
-      "confidence": "medium"
-    },
-    "Chicken Quesadilla": {
-      "supplier": "Tyson Foods",
-      "confidence": "medium"
-    },
-    "Steak": {
-      "supplier": "Cargill / Marfrig",
-      "confidence": "low"
-    }
+    "Crunchy Taco Beef": { "supplier": "Cargill", "confidence": "medium" },
+    "Beef Burrito": { "supplier": "Cargill", "confidence": "medium" },
+    "Chicken Quesadilla": { "supplier": "Tyson Foods", "confidence": "medium" },
+    "Steak": { "supplier": "Cargill / Marfrig", "confidence": "low" }
   },
   "Burger King": {
-    "Whopper": {
-      "supplier": "Cargill / Tyson Foods",
-      "confidence": "medium"
-    },
-    "Chicken Fries": {
-      "supplier": "Tyson Foods",
-      "confidence": "high"
-    },
-    "Original Chicken Sandwich": {
-      "supplier": "Tyson Foods",
-      "confidence": "medium"
-    }
+    "Whopper": { "supplier": "Cargill / Tyson Foods", "confidence": "medium" },
+    "Chicken Fries": { "supplier": "Tyson Foods", "confidence": "high" },
+    "Original Chicken Sandwich": { "supplier": "Tyson Foods", "confidence": "medium" }
   },
   "Subway": {
-    "Turkey Breast": {
-      "supplier": "Butterball / Jennie-O",
-      "confidence": "medium"
-    },
-    "Roast Beef": {
-      "supplier": "Cargill",
-      "confidence": "low"
-    },
-    "Chicken Teriyaki": {
-      "supplier": "Perdue Farms",
-      "confidence": "low"
-    },
-    "Tuna": {
-      "supplier": "Thai Union Group",
-      "confidence": "medium"
-    }
+    "Turkey Breast": { "supplier": "Butterball / Jennie-O", "confidence": "medium" },
+    "Roast Beef": { "supplier": "Cargill", "confidence": "low" },
+    "Chicken Teriyaki": { "supplier": "Perdue Farms", "confidence": "low" },
+    "Tuna": { "supplier": "Thai Union Group", "confidence": "medium" }
   },
   "Chipotle": {
-    "Chicken": {
-      "supplier": "Bell & Evans / Perdue Farms",
-      "confidence": "high"
-    },
-    "Steak": {
-      "supplier": "Meyer Natural Angus / Cargill",
-      "confidence": "medium"
-    },
-    "Carnitas": {
-      "supplier": "Niman Ranch / Karro Food",
-      "confidence": "medium"
-    },
-    "Barbacoa": {
-      "supplier": "Australian cattle suppliers",
-      "confidence": "low"
-    }
+    "Chicken": { "supplier": "Bell & Evans / Perdue Farms", "confidence": "high" },
+    "Steak": { "supplier": "Meyer Natural Angus / Cargill", "confidence": "medium" },
+    "Carnitas": { "supplier": "Niman Ranch / Karro Food", "confidence": "medium" },
+    "Barbacoa": { "supplier": "Australian cattle suppliers", "confidence": "low" }
   },
   "Popeyes": {
-    "Chicken Sandwich": {
-      "supplier": "Columbia Meat / Wayne Farms",
-      "confidence": "high"
-    },
-    "Fried Chicken": {
-      "supplier": "Wayne Farms / Pilgrim's Pride",
-      "confidence": "high"
-    },
-    "Chicken Tenders": {
-      "supplier": "Wayne Farms",
-      "confidence": "medium"
-    }
+    "Chicken Sandwich": { "supplier": "Columbia Meat / Wayne Farms", "confidence": "high" },
+    "Fried Chicken": { "supplier": "Wayne Farms / Pilgrim's Pride", "confidence": "high" },
+    "Chicken Tenders": { "supplier": "Wayne Farms", "confidence": "medium" }
   },
   "Arby's": {
-    "Roast Beef": {
-      "supplier": "JBS / Cargill",
-      "confidence": "medium"
-    },
-    "Turkey": {
-      "supplier": "Butterball",
-      "confidence": "medium"
-    },
-    "Chicken Tenders": {
-      "supplier": "Tyson Foods",
-      "confidence": "medium"
-    }
+    "Roast Beef": { "supplier": "JBS / Cargill", "confidence": "medium" },
+    "Turkey": { "supplier": "Butterball", "confidence": "medium" },
+    "Chicken Tenders": { "supplier": "Tyson Foods", "confidence": "medium" }
   }
 };
 
 // ===== State Management =====
 let currentPhoto = null;
+let currentQuery = { chain: '', item: '' };
 
 // ===== Initialize on Page Load =====
 document.addEventListener('DOMContentLoaded', function() {
     console.log('SourceCheck loaded successfully!');
     setupEventListeners();
+    checkContributorStatus();
 });
+
+// ===== Contributor Badge =====
+function checkContributorStatus() {
+    const isContributor = getCookie('sourcecheck_contributor');
+    if (isContributor === 'true') {
+        showContributorBadge();
+    }
+}
+
+function showContributorBadge() {
+    const badgeContainer = document.getElementById('contributorBadge');
+    badgeContainer.innerHTML = '<div class="contributor-badge">⭐ Contributor</div>';
+}
+
+function setContributorCookie() {
+    setCookie('sourcecheck_contributor', 'true', 365);
+    showContributorBadge();
+}
+
+// ===== Cookie Functions =====
+function setCookie(name, value, days) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
 
 // ===== Event Listeners =====
 function setupEventListeners() {
@@ -714,8 +797,6 @@ function handleLookup() {
 
 function searchSupplier(query) {
     const normalizedQuery = query.toLowerCase();
-    
-    // Try to extract chain and item from query
     let bestMatch = null;
     let bestScore = 0;
 
@@ -723,7 +804,6 @@ function searchSupplier(query) {
         const chainScore = fuzzyMatch(normalizedQuery, chain.toLowerCase());
         
         if (chainScore > 0.3) {
-            // Chain potentially matches, now check items
             for (const [itemName, itemData] of Object.entries(items)) {
                 const itemScore = fuzzyMatch(normalizedQuery, itemName.toLowerCase());
                 const combinedScore = chainScore + itemScore;
@@ -741,20 +821,13 @@ function searchSupplier(query) {
         }
     }
 
-    // If we have a decent match, return it
     if (bestMatch && bestScore > 0.5) {
         return bestMatch;
     }
 
-    // Check if at least the chain matches
     for (const [chain, items] of Object.entries(SUPPLIER_DATA)) {
         if (fuzzyMatch(normalizedQuery, chain.toLowerCase()) > 0.5) {
-            return {
-                chain: chain,
-                item: null,
-                supplier: null,
-                confidence: null
-            };
+            return { chain: chain, item: null, supplier: null, confidence: null };
         }
     }
 
@@ -763,11 +836,6 @@ function searchSupplier(query) {
 
 // ===== Fuzzy Matching Algorithm =====
 function fuzzyMatch(query, target) {
-    // Simple fuzzy matching based on:
-    // 1. Exact substring match
-    // 2. Word-level matches
-    // 3. Character overlap
-    
     if (target.includes(query)) return 1.0;
     if (query.includes(target)) return 0.9;
     
@@ -785,8 +853,6 @@ function fuzzyMatch(query, target) {
     }
     
     const wordScore = wordMatches / Math.max(queryWords.length, targetWords.length);
-    
-    // Calculate character overlap
     const queryChars = new Set(query.replace(/\s+/g, ''));
     const targetChars = new Set(target.replace(/\s+/g, ''));
     const intersection = new Set([...queryChars].filter(x => targetChars.has(x)));
@@ -801,27 +867,28 @@ function displayResult(result, originalQuery) {
     const resultContent = document.getElementById('resultContent');
     
     resultsSection.style.display = 'block';
+    currentQuery = parseQuery(originalQuery);
     
     if (!result) {
-        // No chain or item found
         resultContent.innerHTML = `
             <div class="no-result">
                 <h3>No data available</h3>
                 <p>We don't have information for "<strong>${escapeHtml(originalQuery)}</strong>" yet.</p>
-                <p style="margin-top: 15px;">Help improve SourceCheck by sharing what you know!</p>
+                <button class="add-data-btn" onclick="showSubmissionForm()">➕ Add this data?</button>
+                <div id="submissionFormContainer"></div>
             </div>
         `;
     } else if (result.item === null) {
-        // Chain found but not the specific item
         resultContent.innerHTML = `
             <div class="no-result">
                 <h3>Chain found: ${escapeHtml(result.chain)}</h3>
                 <p>We have data for ${escapeHtml(result.chain)}, but this specific item isn't in our database yet.</p>
                 <p style="margin-top: 15px;">Available items: ${getAvailableItems(result.chain)}</p>
+                <button class="add-data-btn" onclick="showSubmissionForm()">➕ Add this item?</button>
+                <div id="submissionFormContainer"></div>
             </div>
         `;
     } else {
-        // Full match found
         const confidenceText = getConfidenceText(result.confidence);
         const confidenceClass = result.confidence;
         
@@ -845,12 +912,128 @@ function displayResult(result, originalQuery) {
         `;
     }
     
-    // Scroll to results on mobile
     if (window.innerWidth < 768) {
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 }
 
+// ===== Parse Query =====
+function parseQuery(query) {
+    const normalized = query.toLowerCase();
+    let chain = '';
+    let item = '';
+    
+    for (const chainName of Object.keys(SUPPLIER_DATA)) {
+        if (fuzzyMatch(normalized, chainName.toLowerCase()) > 0.5) {
+            chain = chainName;
+            item = query.replace(new RegExp(chainName, 'gi'), '').trim();
+            break;
+        }
+    }
+    
+    if (!chain) {
+        const parts = query.split(/\s+/);
+        if (parts.length > 1) {
+            chain = parts[0];
+            item = parts.slice(1).join(' ');
+        } else {
+            chain = query;
+        }
+    }
+    
+    return { chain, item };
+}
+
+// ===== Submission Form =====
+function showSubmissionForm() {
+    const container = document.getElementById('submissionFormContainer');
+    
+    container.innerHTML = `
+        <div class="submission-form">
+            <h4>📝 Submit Supplier Information</h4>
+            <form id="supplierSubmissionForm" onsubmit="handleSubmission(event)">
+                <div class="form-row">
+                    <label for="formChain">Restaurant Chain *</label>
+                    <input type="text" id="formChain" value="${escapeHtml(currentQuery.chain)}" required>
+                </div>
+                
+                <div class="form-row">
+                    <label for="formItem">Menu Item *</label>
+                    <input type="text" id="formItem" value="${escapeHtml(currentQuery.item)}" required>
+                </div>
+                
+                <div class="form-row">
+                    <label for="formSupplier">Supplier Name *</label>
+                    <input type="text" id="formSupplier" placeholder="e.g., Tyson Foods" required>
+                </div>
+                
+                <div class="form-row">
+                    <label for="formConfidence">Confidence Level *</label>
+                    <select id="formConfidence" required>
+                        <option value="">Select confidence level</option>
+                        <option value="high">High - Based on official reports</option>
+                        <option value="medium">Medium - Industry pattern</option>
+                        <option value="low">Low - Limited information</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <label for="formSource">Source Link or Notes (Optional)</label>
+                    <textarea id="formSource" placeholder="Link to source or additional notes..." rows="3"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" onclick="hideSubmissionForm()">Cancel</button>
+                    <button type="submit" class="primary-btn">Submit</button>
+                </div>
+            </form>
+        </div>
+    `;
+}
+
+function hideSubmissionForm() {
+    document.getElementById('submissionFormContainer').innerHTML = '';
+}
+
+function handleSubmission(event) {
+    event.preventDefault();
+    
+    const formData = {
+        chain: document.getElementById('formChain').value,
+        item: document.getElementById('formItem').value,
+        supplier: document.getElementById('formSupplier').value,
+        confidence: document.getElementById('formConfidence').value,
+        source: document.getElementById('formSource').value,
+        timestamp: new Date().toISOString()
+    };
+    
+    console.log('New submission:', formData);
+    
+    // Optional: Uncomment to enable Formspree
+    // Replace 'YOUR_FORMSPREE_ID' with your actual ID from formspree.io
+    /*
+    fetch('https://formspree.io/f/YOUR_FORMSPREE_ID', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    });
+    */
+    
+    const container = document.getElementById('submissionFormContainer');
+    container.innerHTML = `
+        <div class="success-message">
+            ✅ Thanks! Your submission has been received for review.
+        </div>
+    `;
+    
+    setContributorCookie();
+    
+    setTimeout(() => {
+        hideSubmissionForm();
+    }, 3000);
+}
+
+// ===== Helper Functions =====
 function getConfidenceText(confidence) {
     const texts = {
         high: 'High confidence – based on supplier reports',
@@ -868,7 +1051,6 @@ function getAvailableItems(chain) {
     return items.slice(0, 3).join(', ') + `, and ${items.length - 3} more`;
 }
 
-// ===== Error Handling =====
 function showError(message) {
     const resultsSection = document.getElementById('results');
     const resultContent = document.getElementById('resultContent');
@@ -882,7 +1064,6 @@ function showError(message) {
     `;
 }
 
-// ===== Utility Functions =====
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
